@@ -1,5 +1,6 @@
 import { supabase } from './supabase-config.js';
 import { renderNewsGrid } from './news-data.js';
+import { renderBlogGrid } from './blog-data.js';
 
 let isAdmin = false;
 let reviewsData = [];
@@ -793,6 +794,7 @@ async function initApp() {
 
     await fetchReviewsFromSupabase();
     renderNewsGrid('news-grid-container');
+    renderBlogGrid('blog-grid-container');
     await loadAboutMe();
 
     // Search input listener

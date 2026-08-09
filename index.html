@@ -56,6 +56,7 @@
                             <span class="flex items-center gap-1.5"><i class="fa-solid fa-pen-nib text-purple-400 text-xs"></i> Reseñas del Editor</span>
                         </button>
                         <button onclick="showSection('news')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="news">Noticias</button>
+                        <button onclick="showSection('blog')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="blog">Blog</button>
                         <button onclick="showSection('community')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="community">Comunidad</button>
                         <button onclick="showSection('about')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="about">Sobre Mí</button>
                     </div>
@@ -81,6 +82,32 @@
     <!-- Main Content Area -->
     <main class="flex-grow w-full">
         
+        <!-- Blog Section -->
+        <section id="blog-section" class="section-container hidden min-h-screen">
+            <!-- Hero Header Blog -->
+            <div class="relative bg-gray-900 rounded-2xl overflow-hidden mb-12 shadow-2xl border border-gray-800">
+                <div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent"></div>
+                
+                <div class="relative z-10 p-10 md:p-16 flex flex-col items-center text-center">
+                    <span class="px-4 py-1.5 rounded-full bg-gaming-accent/20 border border-gaming-accent text-gaming-accent text-xs font-bold tracking-widest uppercase mb-6 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                        PixelCritic Originals
+                    </span>
+                    <h2 class="text-4xl md:text-6xl font-display font-black text-white mb-6 tracking-tight drop-shadow-lg">
+                        El <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-gaming-accent">Blog</span>
+                    </h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
+                        Artículos de opinión, análisis profundos, tops y reflexiones sobre la industria de los videojuegos que amamos.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Blog Grid -->
+            <div id="blog-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Blog cards will be injected here via JavaScript -->
+            </div>
+        </section>
+
         <!-- SECTION: Home -->
         <section id="home-section" class="section-container block">
             <!-- Hero Banner -->
