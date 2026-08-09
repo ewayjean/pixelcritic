@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelCritique - Reseñas de Videojuegos</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron for a gaming feel, Inter for readability -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gaming: {
+                            dark: '#0f172a',
+                            light: '#1e293b',
+                            accent: '#3b82f6',
+                            highlight: '#10b981',
+                            danger: '#ef4444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .gaming-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+        .hide { display: none !important; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-gaming-accent selection:text-white">
+
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-gray-700 w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showSection('home')">
+                    <i class="fa-solid fa-gamepad text-3xl text-gaming-accent"></i>
+                    <span class="font-display font-bold text-xl tracking-wider text-white">Pixel<span class="text-gaming-accent">Critique</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <button onclick="showSection('home')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent hover:border-gaming-accent" data-target="home">Inicio</button>
+                        <button onclick="showSection('reviews')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent hover:border-gaming-accent" data-target="reviews">Reseñas</button>
+                        <button onclick="showSection('news')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent hover:border-gaming-accent" data-target="news">Noticias</button>
+                        <button onclick="showSection('about')" class="nav-btn hover:text-gaming-accent px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent hover:border-gaming-accent" data-target="about">Sobre Mí</button>
+                    </div>
+                </div>
+                <!-- Admin Button (Hidden by default, shown for demo) -->
+                <div>
+                    <button onclick="toggleAdminMode()" id="adminBtn" class="bg-gaming-light border border-gray-600 hover:border-gaming-highlight px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-300 hover:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-lock"></i> <span id="adminBtnText">Modo Lector</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow w-full">
+        
+        <!-- SECTION: Home -->
+        <section id="home-section" class="section-container block">
+            <!-- Hero -->
+            <div class="relative bg-gaming-light overflow-hidden shadow-2xl">
+                <div class="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center"></div>
+                <div class="max-w-7xl mx-auto py-24 px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+                    <h1 class="text-4xl md:text-6xl font-display font-black text-white mb-6 uppercase tracking-tight">Descubre tu próximo <span class="text-transparent bg-clip-text gaming-gradient">juego favorito</span></h1>
+                    <p class="mt-4 text-xl text-gray-300 max-w-3xl mx-auto font-light">Análisis honestos, directos y sin filtros sobre los últimos lanzamientos y clásicos atemporales.</p>
+                    <div class="mt-10 flex justify-center gap-4">
+                        <button onclick="showSection('reviews')" class="gaming-gradient hover:opacity-90 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-blue-500/30 transition-transform transform hover:scale-105 flex items-center gap-2">
+                            <i class="fa-solid fa-book-open"></i> Leer Reseñas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured/Latest Reviews Container (Populated by JS) -->
+            <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl font-display font-bold mb-8 flex items-center gap-3 border-b border-gray-700 pb-4">
+                    <i class="fa-solid fa-fire text-orange-500"></i> Últimas Reseñas
+                </h2>
+                <div id="latest-reviews-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Loading state -->
+                    <div class="col-span-full text-center py-10 text-gray-400">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-gaming-accent"></i>
+                        <p>Cargando datos desde la base de datos...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Reviews -->
+        <section id="reviews-section" class="section-container hidden max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-700 pb-4">
+                <div>
+                    <h2 class="text-3xl font-display font-bold flex items-center gap-3">
+                        <i class="fa-solid fa-gamepad text-gaming-accent"></i> Todas las Reseñas
+                    </h2>
+                    <p class="text-gray-400 mt-2">Explora nuestra colección completa de análisis.</p>
+                </div>
+                
+                <!-- Admin Add Review Button -->
+                <button id="addReviewBtnBtn" onclick="openModal()" class="hidden mt-4 md:mt-0 bg-gaming-highlight hover:bg-green-500 text-white font-bold py-2 px-6 rounded-md shadow-lg transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Nueva Reseña
+                </button>
+            </div>
+
+            <!-- Search and Filter (Dummy UI for now) -->
+            <div class="glass-panel p-4 rounded-lg mb-8 flex flex-col sm:flex-row gap-4">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md leading-5 bg-gaming-dark text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gaming-accent focus:border-gaming-accent sm:text-sm" placeholder="Buscar juego...">
+                </div>
+            </div>
+
+            <div id="all-reviews-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Reviews populated here -->
+            </div>
+        </section>
+
+        <!-- SECTION: News (Placeholder) -->
+        <section id="news-section" class="section-container hidden max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-display font-bold mb-8 border-b border-gray-700 pb-4 flex items-center gap-3">
+                <i class="fa-solid fa-newspaper text-gaming-accent"></i> Noticias Gaming
+            </h2>
+            <div class="glass-panel p-10 rounded-xl text-center border-dashed border-2 border-gray-600">
+                <i class="fa-solid fa-person-digging text-6xl text-gray-500 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-2">Sección en Construcción</h3>
+                <p class="text-gray-400 max-w-md mx-auto">Pronto agregaremos noticias sobre la industria, eventos y actualizaciones. ¡Mantente atento!</p>
+            </div>
+        </section>
+
+        <!-- SECTION: About (Placeholder) -->
+        <section id="about-section" class="section-container hidden max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-display font-bold mb-8 border-b border-gray-700 pb-4 flex items-center gap-3">
+                <i class="fa-solid fa-user-astronaut text-gaming-accent"></i> Sobre Mí
+            </h2>
+            <div class="glass-panel rounded-xl overflow-hidden flex flex-col md:flex-row">
+                <div class="md:w-1/3 bg-gaming-light p-8 flex flex-col items-center justify-center border-r border-gray-700">
+                    <div class="w-32 h-32 bg-gray-600 rounded-full mb-4 flex items-center justify-center overflow-hidden border-4 border-gaming-accent">
+                        <i class="fa-solid fa-user text-5xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-display">Tu Nombre</h3>
+                    <p class="text-gaming-accent">Crítico de Videojuegos</p>
+                </div>
+                <div class="md:w-2/3 p-8">
+                    <h4 class="text-2xl font-bold mb-4">¡Hola, jugador!</h4>
+                    <p class="text-gray-300 mb-4 leading-relaxed">Soy un apasionado de los videojuegos desde que tengo memoria. Mi objetivo con PixelCritique es ofrecer análisis sinceros, profundizando en lo que hace que un juego sea especial (o por qué falla en el intento).</p>
+                    <p class="text-gray-300 leading-relaxed">No me dejo llevar por el hype; analizo mecánicas, narrativa, arte y rendimiento para darte una perspectiva real antes de que decidas invertir tu tiempo y dinero.</p>
+                    
+                    <div class="mt-8 flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gaming-light flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-600 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gaming-light flex items-center justify-center text-gray-400 hover:text-white hover:bg-purple-600 transition-colors"><i class="fa-brands fa-twitch"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gaming-light flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-600 transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Adding/Editing Reviews -->
+    <div id="reviewModal" class="fixed inset-0 z-[100] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black bg-opacity-80 backdrop-blur-sm" onclick="closeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl">
+            <div class="glass-panel rounded-xl shadow-2xl border border-gray-600 overflow-hidden">
+                <div class="flex justify-between items-center p-6 border-b border-gray-700 bg-gaming-light">
+                    <h3 class="text-2xl font-display font-bold text-white">Publicar Nueva Reseña</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6 bg-gaming-dark max-h-[70vh] overflow-y-auto">
+                    <form id="reviewForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Título del Juego</label>
+                                <input type="text" id="gameTitle" required class="w-full bg-gaming-light border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-gaming-accent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Plataformas (Ej: PC, PS5)</label>
+                                <input type="text" id="gamePlatforms" required class="w-full bg-gaming-light border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-gaming-accent">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">URL de Imagen de Portada</label>
+                            <input type="url" id="gameImageUrl" required placeholder="https://ejemplo.com/imagen.jpg" class="w-full bg-gaming-light border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-gaming-accent">
+                            <p class="text-xs text-gray-500 mt-1">Usa una URL de imagen válida para la portada.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Calificación (0-10)</label>
+                            <div class="flex items-center gap-4">
+                                <input type="range" id="gameScore" min="0" max="10" step="0.5" value="8" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" oninput="document.getElementById('scoreValue').innerText = this.value">
+                                <span id="scoreValue" class="font-display font-bold text-2xl text-gaming-accent w-12 text-center">8</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Resumen (Breve)</label>
+                            <input type="text" id="gameSummary" required maxlength="150" class="w-full bg-gaming-light border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-gaming-accent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Reseña Completa</label>
+                            <textarea id="gameReviewText" required rows="6" class="w-full bg-gaming-light border border-gray-600 rounded-md py-2 px-3 text-white focus:outline-none focus:border-gaming-accent resize-none"></textarea>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="p-6 border-t border-gray-700 bg-gaming-light flex justify-end gap-4">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-600 rounded-md text-gray-300 hover:bg-gray-700 transition-colors">Cancelar</button>
+                    <button type="button" id="saveReviewBtn" class="px-6 py-2 bg-gaming-accent hover:bg-blue-600 text-white font-bold rounded-md shadow-lg transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="alertModal" class="fixed inset-0 z-[200] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onclick="closeAlert()"></div>
+        <div class="relative glass-panel rounded-xl border border-gray-600 p-6 max-w-sm w-full mx-4 shadow-2xl text-center">
+            <div id="alertIcon" class="text-4xl mb-4"></div>
+            <h3 id="alertTitle" class="text-xl font-bold mb-2 font-display"></h3>
+            <p id="alertMessage" class="text-gray-300 mb-6"></p>
+            <button onclick="closeAlert()" class="bg-gaming-light border border-gray-500 hover:bg-gray-700 px-6 py-2 rounded text-white font-medium w-full transition-colors">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-panel border-t border-gray-800 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <i class="fa-solid fa-gamepad text-gaming-accent"></i>
+                <span class="font-display font-bold text-lg text-white">Pixel<span class="text-gaming-accent">Critique</span></span>
+            </div>
+            <p class="text-gray-500 text-sm">© 2026 PixelCritique. Creado con pasión por los videojuegos.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module">
+        // Firebase configuration and initialization
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Environment variables injected by the platform
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pixel-critique-dev';
+        let firebaseConfig = {};
+        
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            } else {
+                console.warn("Firebase config not found. App will not save data.");
+            }
+        } catch (e) {
+            console.error("Error parsing Firebase config", e);
+        }
+
+        let app, db, auth, userAuthId;
+        let isAdmin = false; // Toggle for demo purposes
+        let reviewsData = []; // Local cache of reviews
+
+        // UI Functions must be attached to window to be accessible from HTML inline attributes
+        window.showSection = showSection;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.toggleAdminMode = toggleAdminMode;
+        window.closeAlert = closeAlert;
+        window.deleteReview = deleteReview;
+
+        // Basic Navigation Logic
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-container').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            // Show target
+            const target = document.getElementById(sectionId + '-section');
+            if(target) {
+                target.classList.remove('hidden');
+                target.classList.add('block');
+            }
+            
+            // Update active state on nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.target === sectionId) {
+                    btn.classList.add('border-gaming-accent', 'text-gaming-accent');
+                    btn.classList.remove('border-transparent');
+                } else {
+                    btn.classList.remove('border-gaming-accent', 'text-gaming-accent');
+                    btn.classList.add('border-transparent');
+                }
+            });
+        }
+
+        // Custom Alert implementation
+        function showAlert(title, message, type = 'info') {
+            const modal = document.getElementById('alertModal');
+            const icon = document.getElementById('alertIcon');
+            
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            
+            if (type === 'error') {
+                icon.innerHTML = '<i class="fa-solid fa-circle-exclamation text-gaming-danger"></i>';
+                document.getElementById('alertTitle').classList.add('text-gaming-danger');
+            } else if (type === 'success') {
+                icon.innerHTML = '<i class="fa-solid fa-circle-check text-gaming-highlight"></i>';
+                document.getElementById('alertTitle').classList.add('text-gaming-highlight');
+            } else {
+                icon.innerHTML = '<i class="fa-solid fa-info-circle text-gaming-accent"></i>';
+                document.getElementById('alertTitle').classList.remove('text-gaming-danger', 'text-gaming-highlight');
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAlert() {
+            const modal = document.getElementById('alertModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Modal Logic
+        function openModal() {
+            if (!isAdmin) {
+                showAlert("Acceso Denegado", "Solo los administradores pueden crear reseñas.", "error");
+                return;
+            }
+            document.getElementById('reviewModal').classList.remove('hidden');
+            document.getElementById('reviewForm').reset();
+            document.getElementById('scoreValue').innerText = "8";
+        }
+
+        function closeModal() {
+            document.getElementById('reviewModal').classList.add('hidden');
+        }
+
+        // Demo Admin Toggle
+        function toggleAdminMode() {
+            isAdmin = !isAdmin;
+            const btn = document.getElementById('adminBtn');
+            const btnText = document.getElementById('adminBtnText');
+            const addBtn = document.getElementById('addReviewBtnBtn');
+            
+            if (isAdmin) {
+                btn.classList.add('border-gaming-highlight', 'text-gaming-highlight');
+                btn.classList.remove('border-gray-600', 'text-gray-300');
+                btnText.innerText = "Modo Admin";
+                btn.querySelector('i').className = "fa-solid fa-unlock text-gaming-highlight";
+                addBtn.classList.remove('hidden');
+            } else {
+                btn.classList.remove('border-gaming-highlight', 'text-gaming-highlight');
+                btn.classList.add('border-gray-600', 'text-gray-300');
+                btnText.innerText = "Modo Lector";
+                btn.querySelector('i').className = "fa-solid fa-lock";
+                addBtn.classList.add('hidden');
+            }
+            renderReviews(); // Re-render to show/hide delete buttons
+        }
+
+        // Initialize App
+        async function initApp() {
+            if (Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                try {
+                    if (typeof __initial_auth_token !== 'undefined') {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    
+                    userAuthId = auth.currentUser?.uid;
+                    console.log("Auth successful, UID:", userAuthId);
+                    
+                    // Setup listeners after auth
+                    setupDatabaseListener();
+                    setupFormSubmit();
+                } catch (error) {
+                    console.error("Authentication error:", error);
+                    showFallbackUI();
+                }
+            } else {
+                showFallbackUI();
+            }
+            
+            // Set initial state
+            showSection('home');
+        }
+
+        function showFallbackUI() {
+            // Render dummy data if no DB
+            reviewsData = [
+                { id: '1', title: 'CyberQuest 2077', score: 8.5, summary: 'Un mundo increíblemente detallado que sufre de algunos bugs menores.', imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800', platforms: 'PC, PS5' },
+                { id: '2', title: 'Hollow Knight: Silksong', score: 10, summary: 'La espera valió la pena. Una obra maestra del diseño de niveles.', imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800', platforms: 'PC, Switch, Xbox' }
+            ];
+            renderReviews();
+            showAlert("Modo Local", "No se detectó configuración de base de datos. Mostrando datos de prueba.");
+        }
+
+        // Database Operations
+        function getReviewsCollection() {
+            // RULE 1: STRICT PATHS FOR PUBLIC DATA
+            return collection(db, 'artifacts', appId, 'public', 'data', 'game_reviews');
+        }
+
+        function setupDatabaseListener() {
+            if (!userAuthId || !db) return;
+
+            const reviewsRef = getReviewsCollection();
+            
+            onSnapshot(reviewsRef, (snapshot) => {
+                reviewsData = [];
+                snapshot.forEach((doc) => {
+                    reviewsData.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort locally as per RULE 2 (No Complex Queries)
+                reviewsData.sort((a, b) => {
+                    // Sort by timestamp descending, fallback to score if no timestamp
+                    const timeA = a.createdAt?.toMillis() || 0;
+                    const timeB = b.createdAt?.toMillis() || 0;
+                    return timeB - timeA;
+                });
+                
+                renderReviews();
+            }, (error) => {
+                console.error("Error listening to reviews:", error);
+                showAlert("Error", "No se pudieron cargar las reseñas de la base de datos.", "error");
+            });
+        }
+
+        // Rendering UI
+        function getScoreColorClass(score) {
+            if (score >= 9) return 'text-purple-400';
+            if (score >= 7) return 'text-gaming-highlight';
+            if (score >= 5) return 'text-yellow-400';
+            return 'text-gaming-danger';
+        }
+
+        function createReviewCard(review) {
+            const scoreClass = getScoreColorClass(review.score);
+            
+            // Delete button HTML (only visible if admin)
+            const deleteHtml = isAdmin ? 
+                `<button onclick="deleteReview('${review.id}')" class="absolute top-2 right-2 bg-red-600/80 hover:bg-red-600 text-white p-2 rounded-full w-8 h-8 flex items-center justify-center z-20 backdrop-blur-sm transition-colors" title="Eliminar reseña">
+                    <i class="fa-solid fa-trash text-sm"></i>
+                </button>` : '';
+
+            return `
+                <article class="glass-panel rounded-xl overflow-hidden shadow-lg group hover:border-gray-500 transition-all duration-300 relative flex flex-col h-full">
+                    ${deleteHtml}
+                    <div class="relative h-48 overflow-hidden">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10"></div>
+                        <img src="${review.imageUrl}" alt="${review.title}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x400/1e293b/3b82f6?text=No+Image'">
+                        <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/90 to-transparent z-10">
+                            <span class="inline-block px-2 py-1 bg-gaming-dark/80 backdrop-blur-sm text-xs rounded border border-gray-600 text-gray-300 mb-2">${review.platforms}</span>
+                            <h3 class="text-xl font-display font-bold text-white truncate">${review.title}</h3>
+                        </div>
+                        <div class="absolute top-4 left-4 bg-gaming-dark/90 backdrop-blur-md rounded-lg p-2 border border-gray-600 z-10 shadow-lg flex flex-col items-center justify-center w-12">
+                            <span class="text-xs text-gray-400 font-bold">NOTA</span>
+                            <span class="text-lg font-display font-black ${scoreClass}">${review.score}</span>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow line-clamp-3">${review.summary}</p>
+                        <button class="w-full py-2 bg-gaming-light hover:bg-gray-700 border border-gray-600 rounded text-sm font-medium transition-colors text-white mt-auto">Leer Análisis Completo</button>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderReviews() {
+            const homeContainer = document.getElementById('latest-reviews-container');
+            const allContainer = document.getElementById('all-reviews-container');
+            
+            if (reviewsData.length === 0) {
+                const emptyState = `
+                    <div class="col-span-full text-center py-12 glass-panel rounded-xl border-dashed">
+                        <i class="fa-solid fa-ghost text-5xl text-gray-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-300">Aún no hay reseñas</h3>
+                        <p class="text-gray-500 mt-2">Activa el Modo Admin para publicar la primera.</p>
+                    </div>`;
+                homeContainer.innerHTML = emptyState;
+                allContainer.innerHTML = emptyState;
+                return;
+            }
+
+            // Render Latest (Home) - Max 3
+            const latestReviews = reviewsData.slice(0, 3);
+            homeContainer.innerHTML = latestReviews.map(createReviewCard).join('');
+
+            // Render All (Reviews Section)
+            allContainer.innerHTML = reviewsData.map(createReviewCard).join('');
+        }
+
+        // Handle Form Submission
+        function setupFormSubmit() {
+            const saveBtn = document.getElementById('saveReviewBtn');
+            saveBtn.addEventListener('click', async () => {
+                if (!userAuthId || !isAdmin) {
+                    showAlert("Error", "Debes estar en Modo Admin para guardar.", "error");
+                    return;
+                }
+
+                // Validate form
+                const form = document.getElementById('reviewForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+                const newReview = {
+                    title: document.getElementById('gameTitle').value,
+                    platforms: document.getElementById('gamePlatforms').value,
+                    imageUrl: document.getElementById('gameImageUrl').value,
+                    score: parseFloat(document.getElementById('gameScore').value),
+                    summary: document.getElementById('gameSummary').value,
+                    fullText: document.getElementById('gameReviewText').value,
+                    authorId: userAuthId,
+                    createdAt: serverTimestamp()
+                };
+
+                try {
+                    const reviewsRef = getReviewsCollection();
+                    await addDoc(reviewsRef, newReview);
+                    showAlert("¡Éxito!", "Reseña publicada correctamente.", "success");
+                    closeModal();
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    showAlert("Error", "Hubo un problema al guardar la reseña.", "error");
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Guardar';
+                }
+            });
+        }
+
+        // Delete Document Function
+        async function deleteReview(docId) {
+            if (!userAuthId || !isAdmin) return;
+            
+            // Simple confirm via our custom modal (not built for confirms out of box, using hacky approach for demo)
+            if(confirm("¿Estás seguro de que deseas eliminar esta reseña? Esta acción no se puede deshacer.")) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'game_reviews', docId);
+                    await deleteDoc(docRef);
+                    // UI will update automatically via onSnapshot
+                } catch(error) {
+                    console.error("Error deleting document", error);
+                    showAlert("Error", "No se pudo eliminar la reseña", "error");
+                }
+            }
+        }
+
+        // Search functionality (Client-side filtering)
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = reviewsData.filter(review => 
+                review.title.toLowerCase().includes(term) || 
+                review.platforms.toLowerCase().includes(term)
+            );
+            
+            const allContainer = document.getElementById('all-reviews-container');
+            if (filtered.length === 0) {
+                 allContainer.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-400 text-lg">No se encontraron juegos que coincidan con "${term}"</p>
+                    </div>`;
+            } else {
+                allContainer.innerHTML = filtered.map(createReviewCard).join('');
+            }
+        });
+
+        // Initialize when DOM is ready
+        window.addEventListener('DOMContentLoaded', initApp);
+
+    </script>
+</body>
+</html>
