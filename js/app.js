@@ -147,6 +147,7 @@ export function handleAdminLogin(event) {
         if (editAboutBtn) editAboutBtn.classList.remove('hidden');
         
         showSection('admin-panel');
+        loadAdminNotifications();
         showAlert("¡Bienvenido Admin!", "Sesión de administración iniciada con éxito.", "success");
         renderReviews();
     } else {
@@ -748,6 +749,130 @@ export async function saveReview() {
 }
 
 // Delete Review from Supabase
+export async function loadAdminNotifications() {
+    const feedContainer = document.getElementById('adminNotificationsFeed');
+    const reactionsContainer = document.getElementById('adminTopReactionsList');
+    
+    if (!feedContainer || !reactionsContainer) return;
+    
+    feedContainer.innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Cargando notificaciones...</div>';
+    reactionsContainer.innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><br>Cargando...</div>';
+
+    try {
+        // Fetch Comments
+        const { data: comments, error: commError } = await supabase
+            .from('review_comments')
+            .select(`
+                id, author_name, comment_text, created_at, review_id,
+                game_reviews ( title )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+        if (commError) throw commError;
+
+        if (!comments || comments.length === 0) {
+            feedContainer.innerHTML = '<div class="text-center text-gray-500 py-8">No hay comentarios recientes.</div>';
+        } else {
+            feedContainer.innerHTML = comments.map(c => `
+                <div class="glass-panel p-4 rounded-lg border border-gray-700/50 hover:border-gaming-accent transition-colors cursor-pointer group" onclick="viewReviewDetail('${c.review_id}')">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gaming-dark border border-gray-600 flex items-center justify-center text-gray-400 shrink-0">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="font-bold text-white truncate">${c.author_name}</span>
+                                <span class="text-xs text-gray-500 whitespace-nowrap">${timeAgo(c.created_at)}</span>
+                            </div>
+                            <p class="text-sm text-gray-300 line-clamp-2 mb-2">${c.comment_text}</p>
+                            <div class="text-xs text-gray-400 flex items-center gap-1 group-hover:text-gaming-accent transition-colors">
+                                <i class="fa-solid fa-gamepad"></i> En: <span class="font-medium text-white group-hover:text-gaming-accent truncate">${c.game_reviews ? c.game_reviews.title : 'Reseña Desconocida'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Fetch Reactions
+        const { data: reactions, error: reactError } = await supabase
+            .from('review_reactions')
+            .select(`
+                count, reaction_type, review_id,
+                game_reviews ( title )
+            `)
+            .order('count', { ascending: false })
+            .limit(50);
+
+        if (reactError) throw reactError;
+
+        if (!reactions || reactions.length === 0) {
+            reactionsContainer.innerHTML = '<div class="text-center text-gray-500 py-8">No hay reacciones.</div>';
+        } else {
+            // Group by review to show top reviews
+            const grouped = {};
+            reactions.forEach(r => {
+                if(!grouped[r.review_id]) {
+                    grouped[r.review_id] = { title: r.game_reviews ? r.game_reviews.title : 'Desconocido', total: 0, details: [] };
+                }
+                grouped[r.review_id].total += r.count;
+                grouped[r.review_id].details.push({ type: r.reaction_type, count: r.count });
+            });
+            
+            const sortedReviews = Object.values(grouped).sort((a,b) => b.total - a.total).slice(0,5);
+
+            if(sortedReviews.length === 0) {
+                reactionsContainer.innerHTML = '<div class="text-center text-gray-500 py-8">Aún no hay reacciones registradas.</div>';
+            } else {
+                reactionsContainer.innerHTML = sortedReviews.map(r => `
+                    <div class="glass-panel p-3 rounded-lg border border-gray-700/50 cursor-pointer hover:border-gaming-highlight transition-colors" onclick="viewReviewDetail('${Object.keys(grouped).find(key => grouped[key] === r)}')">
+                        <h5 class="text-white font-medium text-sm truncate mb-2 hover:text-gaming-highlight">${r.title}</h5>
+                        <div class="flex items-center gap-3 text-xs">
+                            ${r.details.map(d => `
+                                <span class="flex items-center gap-1 text-gray-400">
+                                    ${getReactionIcon(d.type)} <span class="text-white font-bold">${d.count}</span>
+                                </span>
+                            `).join('')}
+                            <span class="ml-auto text-gaming-accent font-bold">${r.total} Total</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+    } catch (err) {
+        console.error("Error loading notifications:", err);
+        feedContainer.innerHTML = '<div class="text-red-400 text-sm text-center py-4">Error al cargar notificaciones.</div>';
+    }
+}
+
+function timeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSecs < 60) return 'Hace un momento';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours} hrs`;
+    if (diffDays === 1) return 'Ayer';
+    return `Hace ${diffDays} días`;
+}
+
+function getReactionIcon(type) {
+    const icons = {
+        'like': '<i class="fa-solid fa-thumbs-up text-blue-400"></i>',
+        'dislike': '<i class="fa-solid fa-thumbs-down text-red-400"></i>',
+        'love': '<i class="fa-solid fa-heart text-pink-400"></i>',
+        'fire': '<i class="fa-solid fa-fire text-orange-400"></i>'
+    };
+    return icons[type] || '<i class="fa-solid fa-star text-yellow-400"></i>';
+}
+
 export async function deleteReview(docId) {
     if (!isAdmin) return;
     
@@ -794,6 +919,8 @@ window.openAdminLoginModal = openAdminLoginModal;
 window.closeAdminLoginModal = closeAdminLoginModal;
 window.handleAdminLogin = handleAdminLogin;
 window.toggleMobileMenu = toggleMobileMenu;
+window.loadAdminNotifications = loadAdminNotifications;
+window.viewReviewDetail = viewReviewDetail;
 
 // Initial application bootstrap
 async function initApp() {

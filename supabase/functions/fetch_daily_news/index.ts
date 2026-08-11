@@ -38,8 +38,22 @@ serve(async (req) => {
 
     // 4. Formatear las 5 mejores noticias para nuestra base de datos
     const topNews = data.items.slice(0, 5).map((item: any) => {
-      // Extraer imagen del thumbnail o content
-      let imageUrl = item.thumbnail || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop";
+      // Extraer imagen del thumbnail, enclosure o contenido
+      let imageUrl = item.thumbnail || "";
+      if (!imageUrl && item.enclosure && item.enclosure.link) {
+          imageUrl = item.enclosure.link;
+      }
+      if (!imageUrl && item.content) {
+          const imgMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
+          if (imgMatch) imageUrl = imgMatch[1];
+      }
+      if (!imageUrl && item.description) {
+          const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
+          if (imgMatch) imageUrl = imgMatch[1];
+      }
+      if (!imageUrl) {
+          imageUrl = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop";
+      }
       
       // Limpiar un poco el excerpt de HTML
       let excerpt = item.description || "";

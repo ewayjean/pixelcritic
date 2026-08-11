@@ -482,8 +482,35 @@
                 </div>
             </div>
 
+            <!-- Admin Notifications Panel -->
+            <div class="glass-panel p-6 rounded-xl border border-gray-700 mb-8 shadow-xl">
+                <div class="flex items-center justify-between mb-6 border-b border-gray-700/50 pb-4">
+                    <h3 class="text-xl font-display font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bell text-yellow-500"></i> Actividad Reciente de Usuarios
+                    </h3>
+                    <button onclick="loadAdminNotifications()" class="text-sm text-gaming-accent hover:text-white transition-colors" title="Actualizar">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Chronological Feed (Comments) -->
+                    <div class="lg:col-span-2">
+                        <h4 class="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Últimos Comentarios</h4>
+                        <div id="adminNotificationsFeed" class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div class="text-center text-gray-500 py-8">Cargando notificaciones...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reactions Summary -->
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Reseñas más Populares</h4>
+                        <div id="adminTopReactionsList" class="space-y-3">
+                            <div class="text-center text-gray-500 py-8">Cargando reacciones...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
             <!-- Poll Management (Admin) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <!-- Poll Creation -->
