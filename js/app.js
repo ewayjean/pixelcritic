@@ -9,36 +9,7 @@ let currentAboutMeText = "";
 let currentAboutMeName = "Alex Pixel";
 let currentAboutMeRole = "Crítico & Editor Gamer";
 
-// Fallback research-backed games data if Supabase table is empty or uninitialized
-const fallbackReviews = [
-    { 
-        id: '1', 
-        title: 'Elden Ring', 
-        score: 9.6, 
-        summary: 'Ganador del GOTY. Una obra maestra del diseño de mundo abierto en las Tierras Intermedias, creada por FromSoftware y George R.R. Martin.', 
-        fullText: 'Elden Ring expande magistralmente el combate característico de los Soulslike en un mundo abierto vasto e interconectado. El juego combina combates melé de alta precisión, magia versátil, cenizas de guerra personalizables e invocaciones tácticas. Con una dirección artística impresionante en las Tierras Intermedias, ofrece fortalezas en decadencia, catacumbas tenebrosas y vistas majestuosas dominadas por el gran Árbol Áureo.',
-        imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg', 
-        platforms: 'PC, PS5, PS4, Xbox Series X/S, Xbox One' 
-    },
-    { 
-        id: '2', 
-        title: 'Lies of P', 
-        score: 8.0, 
-        summary: 'Un oscuro y brillante Soulslike inspirado en Las aventuras de Pinocho en la sombría ciudad victoriana de Krat.', 
-        fullText: 'Lies of P ofrece una experiencia exigente centrándose en bloqueos perfectos (parry), mecánicas de postura y un sistema innovador de ensamblaje de armas que permite personalizar empuñaduras y hojas. Ambientado en la ciudad gótica de estilo Belle Époque infestada de autómatas asesinos, destaca visualmente por su atmósfera steampunk, calles adoquinadas bañadas por la lluvia y una iluminación espectacular bajo Unreal Engine 4.',
-        imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1627720/header.jpg', 
-        platforms: 'PC, macOS, PS5, PS4, Xbox Series X/S' 
-    },
-    { 
-        id: '3', 
-        title: 'Apex Legends', 
-        score: 8.8, 
-        summary: 'El hero battle royale frenético de Respawn Entertainment ambientado en el universo de Titanfall.', 
-        fullText: 'Apex Legends revolucionó el género Battle Royale al fusionar un gunplay rápido y fluido con habilidades únicas de héroes y un sistema de marcado (ping) no verbal impecable. Destaca por su ritmo vertiginoso basado en deslizamientos, tirolesas y tácticas de escuadrón. Visualmente ofrece alta tasa de cuadros, mapas coloridos y variados como Kings Canyon y Olympus, con efectos visuales claros para combates intensos.',
-        imageUrl: 'https://cdn.akamai.steamstatic.com/steam/apps/1172470/header.jpg', 
-        platforms: 'PC, PS5, PS4, Xbox Series X/S, Switch' 
-    }
-];
+// No fallback reviews, relying solely on Supabase
 
 // Navigation function
 export function showSection(sectionId) {
@@ -647,9 +618,9 @@ async function fetchReviewsFromSupabase() {
 
         if (error) {
             console.warn("Supabase fetch warning:", error.message);
-            reviewsData = fallbackReviews;
+            reviewsData = [];
         } else if (data && data.length > 0) {
-            const fetchedReviews = data.map(item => ({
+            reviewsData = data.map(item => ({
                 id: item.id,
                 title: item.title,
                 platforms: item.platforms,
@@ -660,15 +631,14 @@ async function fetchReviewsFromSupabase() {
                 authorId: item.author_id || null,
                 createdAt: item.created_at
             }));
-            reviewsData = [...fetchedReviews, ...fallbackReviews];
             console.log("Reseñas cargadas exitosamente desde Supabase:", reviewsData.length);
         } else {
-            // If table is newly created and empty, fall back to initial 3 research games
-            reviewsData = fallbackReviews;
+            // Si la tabla está vacía, iniciamos con array vacío
+            reviewsData = [];
         }
     } catch (err) {
         console.error("Error al conectar con Supabase:", err);
-        reviewsData = fallbackReviews;
+        reviewsData = [];
     }
     renderReviews();
 }
