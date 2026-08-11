@@ -1243,6 +1243,7 @@ export async function logoutUser() {
 function handleUserSession(session) {
     currentUser = session ? session.user : null;
     const authContainer = document.getElementById('userAuthContainer');
+    const mobileAuthContainer = document.getElementById('mobileUserAuthContainer');
     
     // Comment form states
     const commentForm = document.getElementById('commentForm');
@@ -1250,23 +1251,34 @@ function handleUserSession(session) {
     const loggedInAvatar = document.getElementById('loggedInAvatar');
     const loggedInName = document.getElementById('loggedInName');
 
+    function getLoggedInHTML(avatar, name) {
+        return `
+            <div class="flex items-center gap-3 bg-gaming-light/50 px-3 py-1.5 rounded-lg border border-gray-700 shadow-inner w-full justify-center md:justify-start">
+                <img src="${avatar}" class="w-7 h-7 rounded-full border border-indigo-500">
+                <span class="text-sm font-bold text-white inline">${name.split(' ')[0]}</span>
+                <button onclick="logoutUser()" class="text-gray-400 hover:text-red-400 transition-colors ml-2" title="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    function getLoggedOutHTML() {
+        return `
+            <button onclick="openUserLoginModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-md text-sm font-medium transition-all text-white flex items-center justify-center gap-2 shadow-lg">
+                <i class="fa-solid fa-user"></i> Iniciar Sesión
+            </button>
+        `;
+    }
+
     if (currentUser) {
         const meta = currentUser.user_metadata;
         const name = meta.name || meta.full_name || 'Usuario';
         const avatar = meta.avatar_url || 'https://placehold.co/400x400/1e293b/3b82f6?text=U';
         
         // Header UI
-        if(authContainer) {
-            authContainer.innerHTML = `
-                <div class="flex items-center gap-3 bg-gaming-light/50 px-3 py-1.5 rounded-lg border border-gray-700 shadow-inner">
-                    <img src="${avatar}" class="w-7 h-7 rounded-full border border-indigo-500">
-                    <span class="text-sm font-bold text-white hidden sm:inline">${name.split(' ')[0]}</span>
-                    <button onclick="logoutUser()" class="text-gray-400 hover:text-red-400 transition-colors ml-2" title="Cerrar sesión">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            `;
-        }
+        if(authContainer) authContainer.innerHTML = getLoggedInHTML(avatar, name);
+        if(mobileAuthContainer) mobileAuthContainer.innerHTML = getLoggedInHTML(avatar, name);
 
         // Comment form UI
         if(commentForm && authMessage) {
@@ -1278,13 +1290,8 @@ function handleUserSession(session) {
 
     } else {
         // Header UI
-        if(authContainer) {
-            authContainer.innerHTML = `
-                <button onclick="openUserLoginModal()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-md text-sm font-medium transition-all text-white flex items-center gap-2 shadow-lg">
-                    <i class="fa-solid fa-user"></i> Iniciar Sesión
-                </button>
-            `;
-        }
+        if(authContainer) authContainer.innerHTML = getLoggedOutHTML();
+        if(mobileAuthContainer) mobileAuthContainer.innerHTML = getLoggedOutHTML();
 
         // Comment form UI
         if(commentForm && authMessage) {
