@@ -549,21 +549,8 @@ function renderReviews() {
     }
 
     // --- GENERAL REVIEWS (Reseñas section) ---
-    const emptyStateGeneral = `
-        <div class="col-span-full text-center py-12 glass-panel rounded-xl border-dashed">
-            <i class="fa-solid fa-ghost text-5xl text-gray-500 mb-4"></i>
-            <h3 class="text-xl font-bold text-gray-300">Aún no hay reseñas generales</h3>
-        </div>`;
-
-    if (homeContainer) homeContainer.innerHTML = generalReviews.length > 0
-        ? generalReviews.slice(0, 3).map(r => createReviewCard(r, false)).join('')
-        : emptyStateGeneral;
-
-    if (allContainer) allContainer.innerHTML = generalReviews.length > 0
-        ? generalReviews.map(r => createReviewCard(r, false)).join('')
-        : emptyStateGeneral;
-
-    // --- EDITOR REVIEWS (Reseñas del Editor section) ---
+    // Defer rendering to applyFilters to apply current sorts/filters
+    applyFilters();    // --- EDITOR REVIEWS (Reseñas del Editor section) ---
     if (editorContainer) {
         editorContainer.innerHTML = editorReviews.length > 0
             ? editorReviews.map(r => createReviewCard(r, true)).join('')
@@ -903,31 +890,96 @@ async function initApp() {
     });
 
     await fetchReviewsFromSupabase();
-    renderNewsGrid('news-grid-container');
-    await loadAboutMe();
-
-    // Search input listener
+    
+    // Search & Filter event listeners
     const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = reviewsData.filter(review => 
-                review.title.toLowerCase().includes(term) || 
-                review.platforms.toLowerCase().includes(term) ||
-                review.summary.toLowerCase().includes(term)
-            );
-            
-            const allContainer = document.getElementById('all-reviews-container');
-            if (filtered.length === 0) {
-                allContainer.innerHTML = `
-                    <div class="col-span-full text-center py-12 glass-panel rounded-xl">
-                        <i class="fa-solid fa-magnifying-glass text-4xl text-gray-500 mb-3"></i>
-                        <p class="text-gray-400 text-lg">No se encontraron juegos que coincidan con "${term}"</p>
-                    </div>`;
-            } else {
-                allContainer.innerHTML = filtered.map(createReviewCard).join('');
-            }
-        });
+    const filterPlatform = document.getElementById('filterPlatform');
+    const filterRating = document.getElementById('filterRating');
+    const filterSort = document.getElementById('filterSort');
+
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (filterPlatform) filterPlatform.addEventListener('change', applyFilters);
+    if (filterRating) filterRating.addEventListener('change', applyFilters);
+    if (filterSort) filterSort.addEventListener('change', applyFilters);
+}
+
+// Advanced Filters Logic
+function applyFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const filterPlatform = document.getElementById('filterPlatform');
+    const filterRating = document.getElementById('filterRating');
+    const filterSort = document.getElementById('filterSort');
+    const allContainer = document.getElementById('all-reviews-container');
+    const homeContainer = document.getElementById('latest-reviews-container');
+    
+    if (!allContainer) return;
+
+    let term = searchInput ? searchInput.value.toLowerCase() : '';
+    let platformVal = filterPlatform ? filterPlatform.value : 'all';
+    let ratingVal = filterRating ? filterRating.value : 'all';
+    let sortVal = filterSort ? filterSort.value : 'newest';
+
+    // 1. Text Search Filter
+    let filtered = reviewsData.filter(r => r.authorId !== 'editor');
+    
+    if (term) {
+        filtered = filtered.filter(review => 
+            review.title.toLowerCase().includes(term) || 
+            review.platforms.toLowerCase().includes(term) ||
+            review.summary.toLowerCase().includes(term)
+        );
+    }
+
+    // 2. Platform Filter
+    if (platformVal !== 'all') {
+        filtered = filtered.filter(review => review.platforms.toLowerCase().includes(platformVal.toLowerCase()));
+    }
+
+    // 3. Rating Filter
+    if (ratingVal !== 'all') {
+        const minRating = parseFloat(ratingVal);
+        filtered = filtered.filter(review => review.score >= minRating);
+    }
+
+    // 4. Sort Order
+    filtered.sort((a, b) => {
+        switch (sortVal) {
+            case 'rating_desc':
+                return b.score - a.score;
+            case 'rating_asc':
+                return a.score - b.score;
+            case 'alpha_asc':
+                return a.title.localeCompare(b.title);
+            case 'alpha_desc':
+                return b.title.localeCompare(a.title);
+            case 'newest':
+            default:
+                return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+    });
+
+    // Render results
+    const emptyStateGeneral = `
+        <div class="col-span-full text-center py-12 glass-panel rounded-xl border-dashed">
+            <i class="fa-solid fa-ghost text-5xl text-gray-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-300">Aún no hay reseñas generales</h3>
+        </div>`;
+
+    if (filtered.length === 0) {
+        allContainer.innerHTML = `
+            <div class="col-span-full text-center py-12 glass-panel rounded-xl border-dashed border-gray-600">
+                <i class="fa-solid fa-magnifying-glass text-4xl text-gray-500 mb-3"></i>
+                <p class="text-gray-400 text-lg">No se encontraron juegos con estos filtros</p>
+            </div>`;
+    } else {
+        allContainer.innerHTML = filtered.map(r => createReviewCard(r, false)).join('');
+    }
+    
+    // Also update Home latest 3 if we are resetting everything
+    if (homeContainer && !term && platformVal === 'all' && ratingVal === 'all' && sortVal === 'newest') {
+        homeContainer.innerHTML = filtered.length > 0
+            ? filtered.slice(0, 3).map(r => createReviewCard(r, false)).join('')
+            : emptyStateGeneral;
     }
 
     // Attach Save Button Listener

@@ -174,13 +174,62 @@
                 </button>
             </div>
 
-            <!-- Search Filter -->
-            <div class="glass-panel p-4 rounded-lg mb-8 flex flex-col sm:flex-row gap-4">
-                <div class="relative flex-grow">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-search text-gray-400"></i>
+            <!-- Search & Filters -->
+            <div class="glass-panel p-4 rounded-lg mb-8 shadow-lg border border-gray-700">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <!-- Text Search -->
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-md leading-5 bg-gaming-dark text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gaming-accent focus:border-gaming-accent sm:text-sm transition-colors" placeholder="Buscar por título, palabra clave...">
                     </div>
-                    <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md leading-5 bg-gaming-dark text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gaming-accent focus:border-gaming-accent sm:text-sm" placeholder="Buscar por título, plataforma o palabra clave...">
+                    
+                    <!-- Filters Grid for Mobile/Desktop -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:w-3/5">
+                        <!-- Platform Filter -->
+                        <div class="relative">
+                            <select id="filterPlatform" class="block w-full pl-3 pr-10 py-2.5 border border-gray-600 rounded-md leading-5 bg-gaming-dark text-gray-300 focus:outline-none focus:ring-1 focus:ring-gaming-accent focus:border-gaming-accent sm:text-sm appearance-none transition-colors">
+                                <option value="all">Plataformas: Todas</option>
+                                <option value="pc">PC</option>
+                                <option value="ps5">PlayStation 5</option>
+                                <option value="ps4">PlayStation 4</option>
+                                <option value="xbox series">Xbox Series X/S</option>
+                                <option value="xbox one">Xbox One</option>
+                                <option value="switch">Nintendo Switch</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="relative">
+                            <select id="filterRating" class="block w-full pl-3 pr-10 py-2.5 border border-gray-600 rounded-md leading-5 bg-gaming-dark text-gray-300 focus:outline-none focus:ring-1 focus:ring-gaming-accent focus:border-gaming-accent sm:text-sm appearance-none transition-colors">
+                                <option value="all">Calificación: Todas</option>
+                                <option value="9">Excelente (9.0+)</option>
+                                <option value="8">Muy Bueno (8.0+)</option>
+                                <option value="7">Bueno (7.0+)</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- Sort Order -->
+                        <div class="relative">
+                            <select id="filterSort" class="block w-full pl-3 pr-10 py-2.5 border border-gray-600 rounded-md leading-5 bg-gaming-dark text-gray-300 focus:outline-none focus:ring-1 focus:ring-gaming-accent focus:border-gaming-accent sm:text-sm appearance-none transition-colors">
+                                <option value="newest">Más Recientes</option>
+                                <option value="rating_desc">Nota (Alta a Baja)</option>
+                                <option value="rating_asc">Nota (Baja a Alta)</option>
+                                <option value="alpha_asc">Nombre (A-Z)</option>
+                                <option value="alpha_desc">Nombre (Z-A)</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
