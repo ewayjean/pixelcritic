@@ -901,6 +901,15 @@ async function initApp() {
     if (filterPlatform) filterPlatform.addEventListener('change', applyFilters);
     if (filterRating) filterRating.addEventListener('change', applyFilters);
     if (filterSort) filterSort.addEventListener('change', applyFilters);
+
+    // Attach Save Button Listener
+    const saveBtn = document.getElementById('saveReviewBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveReview);
+    }
+
+    showSection('home');
+    loadActivePoll(); // Load active poll on init
 }
 
 // Advanced Filters Logic
@@ -982,14 +991,6 @@ function applyFilters() {
             : emptyStateGeneral;
     }
 
-    // Attach Save Button Listener
-    const saveBtn = document.getElementById('saveReviewBtn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', saveReview);
-    }
-
-    showSection('home');
-    loadActivePoll(); // Load active poll on init
 }
 
 window.addEventListener('DOMContentLoaded', initApp);
