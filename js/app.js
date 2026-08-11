@@ -63,7 +63,20 @@ export function showSection(sectionId) {
         }
     });
 
+    // Auto-close mobile menu if it's open
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+export function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
 }
 
 // Custom Alert System
@@ -780,6 +793,7 @@ window.saveReview = saveReview;
 window.openAdminLoginModal = openAdminLoginModal;
 window.closeAdminLoginModal = closeAdminLoginModal;
 window.handleAdminLogin = handleAdminLogin;
+window.toggleMobileMenu = toggleMobileMenu;
 
 // Initial application bootstrap
 async function initApp() {

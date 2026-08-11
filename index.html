@@ -72,9 +72,27 @@
                         <i class="fa-solid fa-gauge-high"></i> Panel Admin
                     </button>
                     <button onclick="toggleAdminMode()" id="adminBtn" class="bg-gaming-light border border-gray-600 hover:border-gaming-highlight px-4 py-2 rounded-md text-sm font-medium transition-all text-gray-300 hover:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-lock"></i> <span id="adminBtnText">Admin</span>
+                        <i class="fa-solid fa-lock"></i> <span id="adminBtnText" class="hidden sm:inline">Admin</span>
+                    </button>
+                    <!-- Mobile Hamburger Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden bg-gaming-light border border-gray-600 px-3 py-2 rounded-md text-gray-300 hover:text-white hover:border-gaming-accent transition-all">
+                        <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-700 bg-gray-900/95 backdrop-blur-md">
+            <div class="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+                <button onclick="showSection('home')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gaming-accent" data-target="home">Inicio</button>
+                <button onclick="showSection('reviews')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gray-300" data-target="reviews">Reseñas</button>
+                <button onclick="showSection('editor-reviews')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gray-300" data-target="editor-reviews"><i class="fa-solid fa-pen-nib text-purple-400 mr-2 text-sm"></i>Reseñas del Editor</button>
+                <button onclick="showSection('news')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gray-300" data-target="news">Noticias</button>
+                <button onclick="showSection('blog')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gray-300" data-target="blog">Blog</button>
+                <button onclick="showSection('community')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gray-300" data-target="community">Comunidad</button>
+                <button onclick="showSection('about')" class="nav-btn block w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gray-300" data-target="about">Sobre Mí</button>
+                <button onclick="showSection('admin-panel')" id="mobileNavAdminPanelBtn" class="hidden nav-btn w-full text-left px-3 py-3 rounded-md text-base font-medium hover:bg-gray-800 text-gaming-accent" data-target="admin-panel"><i class="fa-solid fa-gauge-high mr-2"></i>Panel Admin</button>
             </div>
         </div>
     </nav>
